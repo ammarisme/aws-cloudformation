@@ -1,0 +1,12 @@
+<div class="container projects" id="projects">
+  <h2>Projects</h2>
+  <p class="lead">
+    &ldquo;If you can dream it, you can do it.&rdquo;<br/>
+    - Walt Disney
+  </p>
+  <hr/>
+  <div class="row">
+    <app-project *ngFor="let project of projects" [project]="project"
+                 class="col-md-6 col-sm-12 col-xs-12"></app-project>
+  </div>
+</div>

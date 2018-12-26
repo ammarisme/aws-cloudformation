@@ -1,0 +1,20 @@
+<nav class="navbar navbar-default" id="navbar-example" role="navigation">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button class="navbar-toggle" data-target=".navbar-ex1-collapse" data-toggle="collapse" type="button"><span
+      class="sr-only">Toggle navigation</span></button>
+  </div>
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse navbar-ex1-collapse">
+    <ul class="nav navbar-nav">
+      <li [ngClass]="{'active' : currentRoute=='profile'}"><a [routerLink]="['/profile']" (click)="menuClicked('profile')"  >Profile</a></li>
+      <li [ngClass]="{'active' : currentRoute=='experiences'}"><a [routerLink]="['/experiences']" (click)="menuClicked('experiences')" >Experiences</a></li>
+      <li [ngClass]="{'active' : currentRoute=='skills'}"><a (click)="menuClicked('skills')" [routerLink]="['/skills']">Skills</a></li>
+      <li [ngClass]="{'active' : currentRoute=='projects'}"><a [routerLink]="['/projects']"  (click)="menuClicked('projects')" >Projects</a></li>
+      <li [ngClass]="{'active' : currentRoute=='login'}"><a [routerLink]="['/login']"  (click)="menuClicked('login')" >Login</a></li>
+      <!--<li class="blog-link"><a href="http://ImAmmar.com">Blog</a></li>
+      <li class="research-blog-link"><a href="http://imammar.com/">Research</a></li>-->
+    </ul>
+  </div>
+  <!-- /.navbar-collapse -->
+</nav>

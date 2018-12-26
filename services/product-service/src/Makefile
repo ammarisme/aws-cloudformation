@@ -23,12 +23,12 @@ image: binary
 
 run: image
 	$(call blue, "Running Docker image locally...")
-	docker run -i -t --rm -p 8001:8001 ${name}:${version} 
+	docker run -i -t --rm -p 8001:8001 ${name}:${version}
 
 publish:  
 	$(call blue, "Publishing Docker image to registry...")
 	docker tag ${name}:latest ${registry}/${name}:${version}
-	docker push ${registry}/${name}:${version} 
+	docker push ${registry}/${name}:${version}
 
 clean: 
 	@rm -f app 

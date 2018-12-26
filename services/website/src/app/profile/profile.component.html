@@ -1,0 +1,29 @@
+<div class="background-white">
+  <div class="container" id="profile">
+    <h2>Profile</h2>
+    <input id="search-text" placeholder="Search my profile" type="text"/>
+    <div id="search-results"></div>
+    <hr/>
+    <div class="row">
+      <div class="col-md-4">
+        <h3>About me</h3>
+        <p><a href="#search-text"><strong> Try the CV search box above.</strong></a>
+        </p>
+        <p>{{profile.aboutMe}}</p>
+      </div>
+      <div class="col-md-4 text-center"><img alt="{{profile.name}}" class="profile-img" height="246"
+                                             src="{{profile.imageUrl}}" width="246"/></div>
+      <div class="col-md-4">
+        <h3>Details</h3>
+        <p>
+          <strong>Name:</strong><br/>
+          {{profile.name}}<br/>
+          <strong>Age:</strong><br/>
+          {{profile.age}}<br/>
+          <strong>Location:</strong><br/>
+          {{profile.location}}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
