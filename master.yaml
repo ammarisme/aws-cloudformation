@@ -18,7 +18,8 @@ Resources:
   VPC:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/s3-aws-cloudformation/infrastructure/vpc.yaml
+
+      TemplateURL: https://s3.us-east-2.amazonaws.com/original-script/infrastructure/vpc.yaml
       Parameters:
         EnvironmentName: !Ref AWS::StackName
         VpcCIDR: 10.180.0.0/16
@@ -30,7 +31,7 @@ Resources:
   SecurityGroups:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/s3-aws-cloudformation/infrastructure/security-groups.yaml
+      TemplateURL: https://s3.us-east-2.amazonaws.com/original-script/infrastructure/security-groups.yaml
       Parameters:
         EnvironmentName: !Ref AWS::StackName
         VPC: !GetAtt VPC.Outputs.VPC
@@ -38,7 +39,7 @@ Resources:
   ALB:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/s3-aws-cloudformation/infrastructure/load-balancers.yaml
+      TemplateURL: https://s3.us-east-2.amazonaws.com/original-script/infrastructure/load-balancers.yaml
       Parameters:
         EnvironmentName: !Ref AWS::StackName
         VPC: !GetAtt VPC.Outputs.VPC
@@ -48,21 +49,21 @@ Resources:
   ECS:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/s3-aws-cloudformation/infrastructure/ecs-cluster.yaml
+      TemplateURL: https://s3.us-east-2.amazonaws.com/original-script/infrastructure/ecs-cluster.yaml
       Parameters:
         EnvironmentName: !Ref AWS::StackName
-        InstanceType: t2.large
+        InstanceType: t2.micro
         ClusterSize: 4
         VPC: !GetAtt VPC.Outputs.VPC
         SecurityGroup: !GetAtt SecurityGroups.Outputs.ECSHostSecurityGroup
         Subnets: !GetAtt VPC.Outputs.PrivateSubnets
 
   #ProductService:
-    #Type: AWS::CloudFormation::Stack
+   # Type: AWS::CloudFormation::Stack
     #Properties:
-      #TemplateURL: https://s3.amazonaws.com/ecs-refarch-cloudformation/services/product-service/service.yaml
+     # TemplateURL: https://s3.us-east-2.amazonaws.com/original-script/services/activity-monitor-service/service.yaml
       #Parameters:
-        #VPC: !GetAtt VPC.Outputs.VPC
+       # VPC: !GetAtt VPC.Outputs.VPC
         #Cluster: !GetAtt ECS.Outputs.Cluster
         #DesiredCount: 2
         #Listener: !GetAtt ALB.Outputs.Listener
@@ -71,7 +72,7 @@ Resources:
   WebsiteService:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/s3-aws-cloudformation/services/website/service.yaml
+      TemplateURL: https://s3.us-east-2.amazonaws.com/original-script/services/website/service.yaml
       Parameters:
         VPC: !GetAtt VPC.Outputs.VPC
         Cluster: !GetAtt ECS.Outputs.Cluster
@@ -82,18 +83,30 @@ Resources:
         Path: /
         ECSServiceAutoScalingRoleARN: !GetAtt ECS.Outputs.ECSServiceAutoScalingRole
 
+  SocketService:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.us-east-2.amazonaws.com/original-script/services/activity-monitor-service/service.yaml
+      Parameters:
+        VPC: !GetAtt VPC.Outputs.VPC
+        Cluster: !GetAtt ECS.Outputs.Cluster
+        DesiredCount: 2
+        Listener: !GetAtt ALB.Outputs.Listener
+        Path: /socket
+        ECSServiceAutoScalingRoleARN: !GetAtt ECS.Outputs.ECSServiceAutoScalingRole
+
   LifecycleHook:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/s3-aws-cloudformation/infrastructure/lifecyclehook.yaml
+      TemplateURL: https://s3.us-east-2.amazonaws.com/original-script/infrastructure/lifecyclehook.yaml
       Parameters:
         Cluster: !GetAtt ECS.Outputs.Cluster
         ECSAutoScalingGroupName: !GetAtt ECS.Outputs.ECSAutoScalingGroupName
 
 Outputs:
- # ProductServiceUrl:
- #   Description: The URL endpoint for the product service
-#    Value: !Join ["/", [!GetAtt ALB.Outputs.LoadBalancerUrl, "products"]]
+  ProductServiceUrl:
+    Description: The URL endpoint for the product service
+    Value: !Join ["/", [!GetAtt ALB.Outputs.LoadBalancerUrl, "products"]]
 
   WebsiteServiceUrl:
     Description: The URL endpoint for the website service
