@@ -83,6 +83,21 @@ Resources:
         Path: /assets
         ECSServiceAutoScalingRoleARN: !GetAtt ECS.Outputs.ECSServiceAutoScalingRole
 
+  ActivityDashboardService:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.us-east-2.amazonaws.com/original-script/services/activity-monitor-service.yaml
+      Parameters:
+        VPC: !GetAtt VPC.Outputs.VPC
+        Cluster: !GetAtt ECS.Outputs.Cluster
+        DesiredCount: 2
+        ProductServiceUrl:
+          !Join ["/", [!GetAtt ALB.Outputs.LoadBalancerUrl, "products"]]
+        Listener: !GetAtt ALB.Outputs.Listener
+        Path: /admin
+        ECSServiceAutoScalingRoleARN: !GetAtt ECS.Outputs.ECSServiceAutoScalingRole
+
+
   WebsiteService:
     Type: AWS::CloudFormation::Stack
     Properties:
