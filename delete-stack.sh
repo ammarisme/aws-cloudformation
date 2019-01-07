@@ -1,1 +1,1 @@
-aws delete-stack --stack-name test
+aws delete-stack --stack-name $1

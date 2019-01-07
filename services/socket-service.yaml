@@ -32,7 +32,7 @@ Parameters:
   Path:
     Description: The path to register with the Application Load Balancer
     Type: String
-    Default: /assets
+    Default: /
 
   ECSServiceAutoScalingRoleARN:
     Description: The ECS service auto scaling role ARN
@@ -48,24 +48,24 @@ Resources:
       DesiredCount: !Ref DesiredCount
       TaskDefinition: !Ref TaskDefinition
       LoadBalancers:
-        - ContainerName: "activity-monitor-service"
-          ContainerPort: 80
+        - ContainerName: "socket-service"
+          ContainerPort: 3000
           TargetGroupArn: !Ref TargetGroup
 
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: activity-monitor-service
+      Family: socket-service
       ContainerDefinitions:
-        - Name: activity-monitor-service
+        - Name: socket-service
           Essential: true
-          Image: registry.hub.docker.com/abameerdeen/activity_monitor:v5.2
+          Image: registry.hub.docker.com/abameerdeen/socket_service:v5.2
           Memory: 128
           Environment:
             - Name: PRODUCT_SERVICE_URL
               Value: !Ref ProductServiceUrl
           PortMappings:
-            - ContainerPort: 80
+            - ContainerPort: 3000
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -82,7 +82,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       VpcId: !Ref VPC
-      Port: 80
+      Port: 3000
       Protocol: HTTP
       Matcher:
         HttpCode: 200-299
@@ -96,22 +96,22 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
     Properties:
       ListenerArn: !Ref Listener
-      Priority: 1
+      Priority: 3
       Conditions:
         - Field: path-pattern
-          Values: [ "/admin/*" ]
+          Values: [ "/socket.io" ]
       Actions:
         - TargetGroupArn: !Ref TargetGroup
           Type: forward
 
-  ListenerRule2:
+  ListenerRule1:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
     Properties:
       ListenerArn: !Ref Listener
-      Priority: 2
+      Priority: 4
       Conditions:
         - Field: path-pattern
-          Values: [ "/admin" ]
+          Values: [ "/socket.io/*" ]
       Actions:
         - TargetGroupArn: !Ref TargetGroup
           Type: forward
