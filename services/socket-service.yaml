@@ -1,6 +1,6 @@
 Description: >
-  This is an example of a long running ECS service that needs to connect to another ECS service (product-service)
-  via it's load balancer. We use environment variables to pass the URL of the product-service to this one's container(s).
+  This is a Microservice (ECS Service) listening to the Application Load Balancer on port 3000. The Load Balancer needs to configured properly to
+  support a socket connection on port 3000 for this service to be consumed by other applications in the infrastructure.
 
 Parameters:
   VPC:
@@ -12,25 +12,21 @@ Parameters:
     Type: String
 
   DesiredCount:
-    Description: How many instances of this task should we run across our cluster?
+    Description: The default number of instances of this service. Will be evenly distributed among EC2 instances.
     Type: Number
     Default: 2
 
   MaxCount:
-    Description: Maximum number of instances of this task we can run across our cluster
+    Description: Maximum number of instances we can afford in the infrastructure.
     Type: Number
     Default: 3
-
-  ProductServiceUrl:
-    Description: The URL of the Product Service (used to fetch product information)
-    Type: String
 
   Listener:
     Description: The Application Load Balancer listener to register with
     Type: String
 
   Path:
-    Description: The path to register with the Application Load Balancer
+    Description: The path to register with the Application Load Balancer. This field is unused because we are listening on a different port ultimately.
     Type: String
     Default: /
 
@@ -59,11 +55,8 @@ Resources:
       ContainerDefinitions:
         - Name: socket-service
           Essential: true
-          Image: registry.hub.docker.com/abameerdeen/socket_service:v5.2
+          Image: registry.hub.docker.com/abameerdeen/socket_service:v5.3
           Memory: 128
-          Environment:
-            - Name: PRODUCT_SERVICE_URL
-              Value: !Ref ProductServiceUrl
           PortMappings:
             - ContainerPort: 3000
           LogConfiguration:
@@ -139,22 +132,22 @@ Resources:
               "Version": "2012-10-17",
               "Statement":
                 [
-                  {
-                    "Effect": "Allow",
-                    "Action":
-                      [
-                        "ec2:AuthorizeSecurityGroupIngress",
-                        "ec2:Describe*",
-                        "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
-                        "elasticloadbalancing:Describe*",
-                        "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
-                        "elasticloadbalancing:DeregisterTargets",
-                        "elasticloadbalancing:DescribeTargetGroups",
-                        "elasticloadbalancing:DescribeTargetHealth",
-                        "elasticloadbalancing:RegisterTargets"
-                      ],
-                    "Resource": "*"
-                  }
+                {
+                  "Effect": "Allow",
+                  "Action":
+                    [
+                      "ec2:AuthorizeSecurityGroupIngress",
+                      "ec2:Describe*",
+                      "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+                      "elasticloadbalancing:Describe*",
+                      "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+                      "elasticloadbalancing:DeregisterTargets",
+                      "elasticloadbalancing:DescribeTargetGroups",
+                      "elasticloadbalancing:DescribeTargetHealth",
+                      "elasticloadbalancing:RegisterTargets"
+                    ],
+                  "Resource": "*"
+                }
                 ]
             }
 
